@@ -1,0 +1,12 @@
+def call (String dockerRegistry, String dockerImageTag, String kubernetesDeployment, String kubernetesContainer) {
+    sh """
+        kubectl get deploy $kubernetesDeployment > /dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            echo "Updating image of deployment $kubernetesDeployment"
+            kubectl set image deploy $kubernetesDeployment $kubernetesContainer="$dockerRegistry:$imageTag" --record
+        else
+            echo "Creating deployment $kubernetesDeployment from manifest file"
+            kubectl apply -f manifest.yml --record
+        fi
+    """
+}
