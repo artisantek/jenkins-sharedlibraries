@@ -24,11 +24,13 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
         usernameVariable: "awsAccessKey",
         passwordVariable: "awsSecretKey"
     )]) {
-        sh "aws configure set aws_access_key_id $awsAccessKey"
-        sh "aws configure set aws_secret_access_key $awsSecretKey"
-        sh "aws configure set region $awsRegion"
+        sh """
+            aws configure set aws_access_key_id $awsAccessKey
+            aws configure set aws_secret_access_key $awsSecretKey
+            aws configure set region $awsRegion
 
-        sh "aws ecr get-login-password --region $awsRegion | docker login --username AWS --password-stdin $dockerRegistry"
+            aws ecr get-login-password --region $awsRegion | docker login --username AWS --password-stdin $dockerRegistry
+        """
     }
 
     sh "docker image push $dockerRegistry:$dockerImageTag"
