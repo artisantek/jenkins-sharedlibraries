@@ -3,6 +3,14 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
         if ! command -v aws &> /dev/null; then
             echo "AWS CLI not found. Installing AWS CLI..."
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" &> /dev/null
+            
+            if ! command -v unzip &> /dev/null; then
+                echo "Unzip is not installed. Installing unzip..."
+                sudo apt update
+                sudo apt -y install unzip
+                echo "Unzip installed successfully."
+            fi
+            
             unzip awscliv2.zip &> /dev/null
             sudo ./aws/install &> /dev/null
             rm -rf awscliv2.zip aws
