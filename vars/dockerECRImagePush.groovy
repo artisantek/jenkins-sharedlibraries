@@ -5,7 +5,7 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" > /dev/null
             
             dpkg-query -l unzip 1>/dev/null
-            if [ $? -ne 0 ]; then
+            if [ \$? -ne 0 ]; then
                 echo "Unzip is not installed. Installing unzip..."
                 sudo apt update > /dev/null
                 sudo apt -y install unzip > /dev/null
