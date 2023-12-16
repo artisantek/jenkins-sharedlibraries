@@ -4,7 +4,7 @@ def call (String dockerRegistry, String dockerImageTag, String kubernetesDeploym
             echo "AWS CLI not found. Installing AWS CLI..."
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 2> /dev/null
             
-            dpkg-query -l unzip 1>/dev/null
+            dpkg-query -l unzip 1>/dev/null || true
             if [ \$? -ne 0 ]; then
                 echo "Unzip is not installed. Installing unzip..."
                 sudo apt update &> /dev/null
