@@ -36,7 +36,7 @@ def call (String dockerRegistry, String dockerImageTag, String helmChartName, St
             fi
         """
         
-        sh 'helm upgrade --install $helmChartName helm/ --namespace $kubernetesNamespace --create-namespace --set image.repository="$dockerRegistry:$dockerImageTag" '
+        sh 'helm upgrade --install $helmChartName helm/ --namespace $kubernetesNamespace --create-namespace --set image.account="$dockerRegistry" --set image.tag="$dockerImageTag" '
     }
 }
 
