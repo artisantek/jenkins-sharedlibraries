@@ -1,4 +1,4 @@
-def call (String dockerRegistry, String dockerImageTag, String kubernetesDeployment, String kubernetesContainer, String awsCredID, String awsRegion, String eksClusterName) {
+def call (String dockerRegistry, String dockerImageTag, String kubernetesDeployment, String kubernetesContainer, String awsCredID, String awsRegion, String eksClusterName, String kubernetesNamespace = 'default') {
     sh """
         if ! command -v aws > /dev/null; then
             echo "AWS CLI not found. Installing AWS CLI..."
@@ -35,13 +35,13 @@ def call (String dockerRegistry, String dockerImageTag, String kubernetesDeploym
 
                 aws eks --region $awsRegion update-kubeconfig --name $eksClusterName
 
-                kubectl get deploy $kubernetesDeployment || true; if [ \$? -ne 0 ]; then
-                    echo "Updating image of deployment $kubernetesDeployment"
-                    kubectl set image deploy $kubernetesDeployment $kubernetesContainer="$dockerRegistry:$dockerImageTag" --record
+                kubectl get deploy -n $kubernetesNamespace $kubernetesDeployment || true; if [ \$? -ne 0 ]; then
+                    echo "Updating image of deployment $kubernetesDeployment in namespace $kubernetesNamespace"
+                    kubectl set image deploy -n $kubernetesNamespace $kubernetesDeployment $kubernetesContainer="$dockerRegistry:$dockerImageTag" --record
                 else
-                    echo "Creating deployment $kubernetesDeployment from manifest file"
-                    kubectl apply -f manifest.yml --record
-                    kubectl set image deploy $kubernetesDeployment $kubernetesContainer="$dockerRegistry:$dockerImageTag" --record
+                    echo "Creating deployment $kubernetesDeployment in namespace $kubernetesNamespace from manifest file"
+                    kubectl apply -n $kubernetesNamespace -f manifest.yml --record
+                    kubectl set image deploy -n $kubernetesNamespace $kubernetesDeployment $kubernetesContainer="$dockerRegistry:$dockerImageTag" --record
                 fi
             """
         }
