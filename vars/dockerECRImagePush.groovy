@@ -1,4 +1,6 @@
 def call(String dockerRegistry, String dockerImageTag, String awsCredID, String awsRegion){
+    def repositoryName = dockerRegistry.split('/')[-1]
+    
     sh """
         if ! command -v aws > /dev/null; then
             echo "AWS CLI not found. Installing AWS CLI..."
@@ -19,9 +21,6 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
         passwordVariable: "awsSecretKey"
     )]) {
         sh """
-            # Extract the repository name from the dockerRegistry URL
-            repositoryName=\$(echo ${dockerRegistry} | awk -F'/' '{print \$NF}')
-
             # Configure AWS CLI
             aws configure set aws_access_key_id $awsAccessKey
             aws configure set aws_secret_access_key $awsSecretKey
