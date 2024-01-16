@@ -18,25 +18,27 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
         usernameVariable: "awsAccessKey",
         passwordVariable: "awsSecretKey"
     )]) {
-        def matcher = (dockerRegistry =~ /([^\/]+)$/)
-        String repositoryName = matcher ? matcher[0][1] : ''
+        script {
+            // Extract the repository name using a regular expression inside a script block
+            def matcher = (dockerRegistry =~ /([^\/]+)$/)
+            String repositoryName = matcher ? matcher[0][1] : ''
 
-        sh """
-            echo $repositoryName
-            aws configure set aws_access_key_id $awsAccessKey
-            aws configure set aws_secret_access_key $awsSecretKey
-            aws configure set region $awsRegion
+            sh """
+                aws configure set aws_access_key_id $awsAccessKey
+                aws configure set aws_secret_access_key $awsSecretKey
+                aws configure set region $awsRegion
 
-            # Check if the repository exists
-            if ! aws ecr describe-repositories --repository-names $repositoryName --region $awsRegion ; then
-                echo "Repository $repositoryName does not exist. Creating repository."
-                aws ecr create-repository --repository-name $repositoryName --region $awsRegion
-            else
-                echo "Repository $repositoryName already exists."
-            fi
+                # Check if the repository exists
+                if ! aws ecr describe-repositories --repository-names $repositoryName --region $awsRegion ; then
+                    echo "Repository $repositoryName does not exist. Creating repository."
+                    aws ecr create-repository --repository-name $repositoryName --region $awsRegion
+                else
+                    echo "Repository $repositoryName already exists."
+                fi
 
-            aws ecr get-login-password --region $awsRegion | docker login --username AWS --password-stdin $dockerRegistry
-        """
+                aws ecr get-login-password --region $awsRegion | docker login --username AWS --password-stdin $dockerRegistry
+            """
+        }
     }
 
     sh "docker image push $dockerRegistry:$dockerImageTag"
