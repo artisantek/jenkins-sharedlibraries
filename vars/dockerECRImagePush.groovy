@@ -21,6 +21,7 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
         String repositoryName = dockerRegistry.split("/")[-1]
 
         sh """
+            echo $repositoryName
             aws configure set aws_access_key_id $awsAccessKey
             aws configure set aws_secret_access_key $awsSecretKey
             aws configure set region $awsRegion
