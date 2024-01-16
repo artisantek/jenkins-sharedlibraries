@@ -22,6 +22,7 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
             # Extract the repository name from the dockerRegistry URL
             repositoryName=\$(echo ${dockerRegistry} | awk -F'/' '{print \$NF}')
 
+            # Configure AWS CLI
             aws configure set aws_access_key_id $awsAccessKey
             aws configure set aws_secret_access_key $awsSecretKey
             aws configure set region $awsRegion
@@ -38,11 +39,8 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
             aws ecr get-login-password --region $awsRegion | docker login --username AWS --password-stdin $dockerRegistry
 
             # Push the Docker images
-            docker image push $dockerRegistry/$dockerImageTag:$dockerImageTag
-            docker image push $dockerRegistry/$dockerImageTag:latest
+            docker image push $dockerRegistry:$dockerImageTag
+            docker image push $dockerRegistry:latest
         """
     }
-
-    sh "docker image push $dockerRegistry:$dockerImageTag"
-    sh "docker image push $dockerRegistry:latest"   
 }
