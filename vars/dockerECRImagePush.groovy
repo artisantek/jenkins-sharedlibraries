@@ -1,6 +1,6 @@
 def call(String dockerRegistry, String dockerImageTag, String awsCredID, String awsRegion){
-    def repositoryName = dockerRegistry.split('/')[-1]
-    
+    def repositoryName = dockerRegistry.tokenize('/').last()
+    echo '$repositoryName'
     sh """
         if ! command -v aws > /dev/null; then
             echo "AWS CLI not found. Installing AWS CLI..."
