@@ -18,7 +18,7 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
         usernameVariable: "awsAccessKey",
         passwordVariable: "awsSecretKey"
     )]) {
-        String repositoryName = dockerRegistry.tokenize('/')[-1]
+        String repositoryName = dockerRegistry.split("/")[-1]
 
         sh """
             aws configure set aws_access_key_id $awsAccessKey
