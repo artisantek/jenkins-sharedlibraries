@@ -18,7 +18,8 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
         usernameVariable: "awsAccessKey",
         passwordVariable: "awsSecretKey"
     )]) {
-        String repositoryName = dockerRegistry.split("/")[-1]
+        def matcher = (dockerRegistry =~ /([^\/]+)$/)
+        String repositoryName = matcher ? matcher[0][1] : ''
 
         sh """
             echo $repositoryName
