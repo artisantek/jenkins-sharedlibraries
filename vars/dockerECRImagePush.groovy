@@ -1,6 +1,4 @@
-def call(String dockerRegistry, String dockerImageTag, String awsCredID, String awsRegion){
-    def repositoryName = dockerRegistry.tokenize('/').last()
-    echo '$repositoryName'
+def call(String dockerRegistry, String dockerImageTag, String ecrRepo, String awsCredID, String awsRegion){
     sh """
         if ! command -v aws > /dev/null; then
             echo "AWS CLI not found. Installing AWS CLI..."
@@ -27,11 +25,11 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
             aws configure set region $awsRegion
 
             # Check if the repository exists and create it if it does not
-            if ! aws ecr describe-repositories --repository-names $repositoryName --region $awsRegion >/dev/null 2>&1; then
-                echo "Repository $repositoryName does not exist. Creating repository."
-                aws ecr create-repository --repository-name $repositoryName --region $awsRegion
+            if ! aws ecr describe-repositories --repository-names $ecrRepo --region $awsRegion >/dev/null 2>&1; then
+                echo "Repository $ecrRepo does not exist. Creating repository."
+                aws ecr create-repository --repository-name $ecrRepo --region $awsRegion
             else
-                echo "Repository $repositoryName already exists."
+                echo "Repository $ecrRepo already exists."
             fi
 
             # Login to Docker registry
