@@ -18,16 +18,19 @@ def call(String dockerRegistry, String dockerImageTag, String awsCredID, String 
         usernameVariable: "awsAccessKey",
         passwordVariable: "awsSecretKey"
     )]) {
+        String repositoryName = dockerRegistry.tokenize('/')[-1]
+
         sh """
             aws configure set aws_access_key_id $awsAccessKey
             aws configure set aws_secret_access_key $awsSecretKey
             aws configure set region $awsRegion
-            
-            if ! aws ecr describe-repositories --repository-names ${dockerRegistry} --region $awsRegion ; then
-                echo "Repository ${dockerRegistry} does not exist. Creating repository."
-                aws ecr create-repository --repository-name ${dockerRegistry} --region $awsRegion
+
+            # Check if the repository exists
+            if ! aws ecr describe-repositories --repository-names $repositoryName --region $awsRegion ; then
+                echo "Repository $repositoryName does not exist. Creating repository."
+                aws ecr create-repository --repository-name $repositoryName --region $awsRegion
             else
-                echo "Repository ${dockerRegistry} already exists."
+                echo "Repository $repositoryName already exists."
             fi
 
             aws ecr get-login-password --region $awsRegion | docker login --username AWS --password-stdin $dockerRegistry
