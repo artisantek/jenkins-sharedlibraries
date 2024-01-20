@@ -1,6 +1,6 @@
 def call(String gitCredID) {
     checkout([$class: 'GitSCM', branches: [[name: "master"]], extensions: [], userRemoteConfigs: [[credentialsId: "$gitCredID", url: "${env.REPO_URL}"]]])
-
+    
     sh """
         #Create branches: master_staging, development
         git branch master_staging
@@ -8,8 +8,16 @@ def call(String gitCredID) {
 
         # Checkout feature/initial_commit branch and clone the external repo
         git checkout -b feature/initial_commit
-        git clone -b master --single-branch https://github.com/artisantek/code-framework.git cloned_repo
-
+    """
+    def codeFrameworkRepo = 'https://github.com/artisantek/code-framework.git'
+    def cloneDir = 'cloned_repo'
+    
+    checkout([$class: 'GitSCM', 
+              branches: [[name: '*/master']], 
+              doGenerateSubmoduleConfigurations: false, 
+              extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: cloneDir]], 
+              userRemoteConfigs: [[url: codeFrameworkRepo, credentialsId: gitCredID]]])
+    sh """
         # Copy the contents from the cloned repo to the current workspace
         cp -r cloned_repo/* .
 
