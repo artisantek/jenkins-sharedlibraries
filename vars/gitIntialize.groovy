@@ -1,5 +1,5 @@
 def call(String gitCredID) {
-    checkout([$class: 'GitSCM', branches: [[name: "master"]], extensions: [], userRemoteConfigs: [[credentialsId: gitCredID, url: "${env.REPO_URL}"]]])
+    checkout([$class: 'GitSCM', branches: [[name: "master"]], extensions: [], userRemoteConfigs: [[credentialsId: "$gitCredID", url: "${env.REPO_URL}"]]])
 
     sh """
         #Create branches: master_staging, development
