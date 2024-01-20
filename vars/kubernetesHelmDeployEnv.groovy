@@ -35,7 +35,7 @@ def call (String dockerRegistry, String dockerImageTag, String helmChartName, St
                 echo "Helm installed successfully."
             fi
         """
-        valuesFile=$([ "$kubernetesNamespace" = "dev" ] && echo "DEV.yaml" || ([ "$kubernetesNamespace" = "uat" ] && echo "UAT.yaml" || echo "PROD.yaml"))
+        valuesFile=$([ "$kubernetesNamespace" = "dev" ] || [ "$kubernetesNamespace" = "default" ] && echo "DEV.yaml" || ([ "$kubernetesNamespace" = "uat" ] && echo "UAT.yaml" || echo "PROD.yaml"))
 
         sh 'helm upgrade --install $helmChartName helm/ --namespace $kubernetesNamespace --create-namespace --set image.repository="$dockerRegistry:$dockerImageTag" -f helm/values/$valuesFile'
     }
