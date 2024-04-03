@@ -8,7 +8,7 @@ def call (String dockerRegistry, String dockerImageTag, String helmChartName) {
             rm -f get_helm.sh
             echo "Helm installed successfully."
         fi
+
+        helm upgrade --install $helmChartName helm/ --set image.repository=$dockerRegistry --set image.tag=$dockerImageTag
     """
-        
-    sh 'helm upgrade --install $helmChartName helm/ --set image.repository="$dockerRegistry" --set image.tag="$dockerImageTag" '
 }
