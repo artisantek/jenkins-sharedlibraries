@@ -44,5 +44,5 @@ def call(String dockerRegistry, String dockerImageTag, String helmChartName, Str
     }
 
     // Deploy using Helm
-    sh "helm upgrade --install ${helmChartName} helm/ --namespace ${kubernetesNamespace} --create-namespace --set image.repository=${dockerRegistry}:${dockerImageTag} -f helm/values/${valuesFile}"
+    sh "helm upgrade --install ${helmChartName} helm/ --namespace ${kubernetesNamespace} --create-namespace --set image.repository=${dockerRegistry} --set image.tag=${dockerImageTag} -f helm/values/${valuesFile}"
 }
