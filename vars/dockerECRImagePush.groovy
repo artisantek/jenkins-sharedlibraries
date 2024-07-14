@@ -13,15 +13,12 @@ def call(String dockerRegistry, String dockerImageTag, String ecrRepo, String aw
         fi
     """
 
-    withCredentials([usernamePassword(
-        credentialsId: "$awsCredID",
-        usernameVariable: "awsAccessKey",
-        passwordVariable: "awsSecretKey"
-    )]) {
+    // Use the 'aws' type credentials directly
+    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: awsCredID]]) {
         sh """
             # Configure AWS CLI
-            aws configure set aws_access_key_id $awsAccessKey
-            aws configure set aws_secret_access_key $awsSecretKey
+            aws configure set aws_access_key_id \$AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key \$AWS_SECRET_ACCESS_KEY
             aws configure set region $awsRegion
 
             # Check if the repository exists and create it if it does not

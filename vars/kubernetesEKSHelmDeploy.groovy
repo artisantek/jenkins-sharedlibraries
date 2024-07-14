@@ -1,4 +1,4 @@
-def call (String dockerRegistry, String dockerImageTag, String helmChartName, String awsCredID, String awsRegion, String eksClusterName, String kubernetesNamespace = 'default') {
+def call(String dockerRegistry, String dockerImageTag, String helmChartName, String awsCredID, String awsRegion, String eksClusterName, String kubernetesNamespace = 'default') {
     sh """
         if ! command -v aws > /dev/null; then
             echo "AWS CLI not found. Installing AWS CLI..."
@@ -11,18 +11,14 @@ def call (String dockerRegistry, String dockerImageTag, String helmChartName, St
             rm -rf awscliv2.zip aws
             echo "AWS CLI installed successfully."
         fi
-    sh """
-    
-    withCredentials([usernamePassword(
-        credentialsId: "$awsCredID",
-        usernameVariable: "awsAccessKey",
-        passwordVariable: "awsSecretKey"
-    )]) {
+    """
 
+    // Use the 'aws' type credentials directly
+    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: awsCredID]]) {
         sh """
-
-            aws configure set aws_access_key_id $awsAccessKey
-            aws configure set aws_secret_access_key $awsSecretKey
+            # Configure AWS CLI
+            aws configure set aws_access_key_id \$AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key \$AWS_SECRET_ACCESS_KEY
             aws configure set region $awsRegion
             aws eks --region $awsRegion update-kubeconfig --name $eksClusterName
 
@@ -36,7 +32,8 @@ def call (String dockerRegistry, String dockerImageTag, String helmChartName, St
             fi
         """
         
-        sh 'helm upgrade --install $helmChartName helm/ --namespace $kubernetesNamespace --create-namespace --set image.account="$dockerRegistry" --set image.tag="$dockerImageTag" '
+        sh """
+            helm upgrade --install $helmChartName helm/ --namespace $kubernetesNamespace --create-namespace --set image.account="$dockerRegistry" --set image.tag="$dockerImageTag"
+        """
     }
 }
-
