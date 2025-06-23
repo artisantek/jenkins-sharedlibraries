@@ -1,4 +1,4 @@
-def call(String dockerRegistry, String dockerImageTag, String helmChartName, String kubernetesNamespace = 'default') {
+def call(String helmChartName, String kubernetesNamespace = 'default') {
     // Determine which values file to use based on the namespace
     def valuesFile = "PROD.yaml" // Default
     if (kubernetesNamespace == "dev") {
